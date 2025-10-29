@@ -11,6 +11,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { chatSession } from '@/utils/gemini'
+import { json } from 'drizzle-orm/gel-core'
+import { LoaderCircle } from 'lucide-react'
+import { MockInterview } from '@/utils/schema'
+import {v4 as uuidv4} from 'uuid'
+import { db } from '@/utils/db'
+import { useUser } from '@clerk/nextjs'
+import moment from 'moment/moment'
+
 
 function AddNewInterviews() {
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -18,14 +26,17 @@ function AddNewInterviews() {
   const [company, setCompany] = React.useState("");
   const [jobRequirement, setJobRequirement] = React.useState("");
   const [experience, setExperience] = React.useState("");
-
+  const [loading, setLoading] = React.useState(false);
+  const [jsonResponse, setJsonResponse] = React.useState([]);
+  const {user}=useUser();
 
   const onSubmit=async(e)=>{
+    setLoading(true);
     console.log(jobRole,company,jobRequirement,experience);
     e.preventDefault();
 
     const inputPrompt=`You are an expert technical interviewer who creates realistic, mixed-difficulty interview questions.
-Generate a total of 10 interview questions and detailed answers based on the following input:
+Generate a total of ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions and detailed answers based on the following input:
 Job Role: ${jobRole}
 Company: ${company}
 Job Requirements / Tech Stack: ${jobRequirement}
@@ -63,8 +74,38 @@ Output Format:
         Ensure the output is valid JSON and each question-answer pair is enclosed properly.`;
   
     const result= await chatSession.sendMessage(inputPrompt);
+    const text= result.response.text();
 
-    console.log("Interview Questions Generated: ",result.response.text());
+    const jsonMockResp= text.replace(/```json/g, "").replace(/```/g, "")
+    .replace(/[\u0000-\u001F]+/g, "") 
+      .trim();
+
+    console.log("Interview Questions Generated: ",JSON.parse(jsonMockResp));
+    setJsonResponse(jsonMockResp);
+
+    if(jsonMockResp){
+    const resp=await db.insert(MockInterview)
+    .values(
+      {
+        jsonMockResp:jsonMockResp,
+        jobRole:jobRole,
+        jobRequirement:jobRequirement,
+        experience:experience,
+        mockId:uuidv4(),
+        company:company,
+        createdBy:user?.primaryEmailAddress?.emailAddress,
+        createdAt: moment().format('DD-MM-YYYY')
+      }
+    ).returning({mockId:MockInterview.mockId});
+
+    console.log("Inserted ID: ",resp);
+  }else{
+    console.log("Error in generating interview questions");
+  }
+
+
+
+    setLoading(false);
   }
   
   return (
@@ -109,7 +150,12 @@ Output Format:
         </div>
         <div className='mt-4 flex gap-4 justify-end'>
           <button onClick={() => setOpenDialog(false)}>Cancel</button>
-          <button type="submit" className='bg-blue-900 text-white px-4 py-2 rounded-md ml-2'>Start Interview</button>
+          <button type="submit" disabled={loading} className='bg-blue-900 text-white px-4 py-2 rounded-md ml-2'>
+            {loading? 
+            <>
+            <LoaderCircle className='animate-spin'/>Generating questions...</>
+            :'Start Interview' }
+            </button>
         </div>
         </form>
       </DialogDescription>
