@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { chatSession } from '@/utils/gemini'
 
 function AddNewInterviews() {
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -17,11 +18,53 @@ function AddNewInterviews() {
   const [company, setCompany] = React.useState("");
   const [jobRequirement, setJobRequirement] = React.useState("");
   const [experience, setExperience] = React.useState("");
-  const onSubmit=(e)=>{
-    console.log("Job Role:", jobRole);
-    console.log("Job Requirement:", jobRequirement);
-    console.log("Experience:", experience);
+
+
+  const onSubmit=async(e)=>{
+    console.log(jobRole,company,jobRequirement,experience);
     e.preventDefault();
+
+    const inputPrompt=`You are an expert technical interviewer who creates realistic, mixed-difficulty interview questions.
+Generate a total of 10 interview questions and detailed answers based on the following input:
+Job Role: ${jobRole}
+Company: ${company}
+Job Requirements / Tech Stack: ${jobRequirement}
+Years of Experience: ${experience}
+Guidelines:
+Generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} questions total — a random mix of:
+majorly technical and technical based scenario questions
+a few behavioral questions(less weight should be given to these.)
+(Behavioral questions should be realistic and related to teamwork, communication, or problem-handling.)
+The difficulty level should be mixed (easy, medium, hard) but adjust dynamically based on experience:
+If Years of Experience = 0 (Fresher):
+Focus on fundamental concepts, basic problem-solving, logical reasoning, and academic knowledge relevant to {{jobRequirement}} as well as general technical requirements.
+Avoid deep system design or high-level architectural questions.
+Include scenario-based or conceptual questions that assess understanding and learning potential, not prior work experience.
+Behavioral questions should explore teamwork in college projects, learning attitude, and adaptability.
+If Years of Experience > 0:
+Ask real-world, practical, and scenario-based questions aligned with the candidate’s experience level.
+Include mid-to-advanced technical questions relevant to {{Job Requirement}}.
+Behavioral questions should assess how they handle challenges in professional environments.
+Frame all questions as if a real interviewer from {{Company}} is conducting the interview.
+Example: “At {{Company}}, we often deal with XYZ challenges. How would you approach…?”
+Ensure questions are relevant to the company’s domain and tech stack provided.
+Each answer should:
+Be clear, realistic, and well-explained, similar to how a strong candidate would respond in a real interview.
+Avoid short or generic answers.
+Include reasoning, examples, and best practices when relevant.
+Avoid bullet or numbered lists inside answers unless needed for clarity.
+Return the output strictly in valid JSON format, with no extra text, markdown, or commentary outside the JSON.
+Output Format:
+[
+{"question": "string", "answer": "string"},
+{"question": "string", "answer": "string"},
+...
+]
+        Ensure the output is valid JSON and each question-answer pair is enclosed properly.`;
+  
+    const result= await chatSession.sendMessage(inputPrompt);
+
+    console.log("Interview Questions Generated: ",result.response.text());
   }
   
   return (

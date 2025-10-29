@@ -1,9 +1,24 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
 
-// Access your API key (ensure it's in .env and NOT prefixed with NEXT_PUBLIC_)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
 
-// Get the latest flash model
-export const model = genAI.getGenerativeModel({ 
-  model: "gemini-1.5-flash-latest" 
+const model = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 10000,
+  responseMimeType: "text/plain",
+};
+export const chatSession = model.startChat({
+  generationConfig,
+  
 });
