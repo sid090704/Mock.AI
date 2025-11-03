@@ -18,6 +18,7 @@ import {v4 as uuidv4} from 'uuid'
 import { db } from '@/utils/db'
 import { useUser } from '@clerk/nextjs'
 import moment from 'moment/moment'
+import { useRouter } from 'next/navigation'
 
 
 function AddNewInterviews() {
@@ -28,6 +29,7 @@ function AddNewInterviews() {
   const [experience, setExperience] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [jsonResponse, setJsonResponse] = React.useState([]);
+  const router = useRouter();
   const {user}=useUser();
 
   const onSubmit=async(e)=>{
@@ -99,6 +101,11 @@ Output Format:
     ).returning({mockId:MockInterview.mockId});
 
     console.log("Inserted ID: ",resp);
+    
+    if(resp){
+      setOpenDialog(false);
+      router.push(`/dashboard/interview/${resp[0].mockId}`);
+    }
   }else{
     console.log("Error in generating interview questions");
   }
