@@ -155,7 +155,7 @@ Example JSON Output Structure:
 
 
 return (
-    <div className="flex flex-col justify-center items-center mt-5">
+    <div className="flex flex-col justify-center items-center mt-1">
         {/* Webcam container */}
         <div className="w-full max-w-xl flex flex-col justify-center items-center bg-blue-200 rounded-lg p-5 mt-20">
             <Image
@@ -190,7 +190,7 @@ return (
                 'Record Answer'
             )}
         </Button>
-        <Button onClick={() => console.log(userAnswer)} className="my-2">Show Answer</Button>
+        
     </div>
 
 )

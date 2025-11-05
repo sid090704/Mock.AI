@@ -5,6 +5,10 @@ import { MockInterview } from '@/utils/schema'
 import { eq } from 'drizzle-orm'
 import QuestionsSection from './_components/QuestionsSection'
 import RecordAnswerSection from './_components/RecordAnswerSection'
+import { Button } from '@/components/ui/button'
+import  Link  from 'next/link'
+
+
 
 
 function startInterview({ params }) {
@@ -36,6 +40,7 @@ function startInterview({ params }) {
 
     return (
         <div>
+            
             <div className='grid grid-cols-1 md:grid-cols-2 gap-20'>
                 {/*Questions}*/}
                 <QuestionsSection
@@ -55,6 +60,23 @@ function startInterview({ params }) {
 
 
             </div>
+            <div className='flex justify-left gap-2 my-4 '>
+                {activeQuestionIndex>0 &&
+                 <Button className=" font-bold rounded-full px-6 py-2"
+                 onClick={()=>setActiveQuestionIndex(activeQuestionIndex-1)}>Previous Question</Button>}
+                
+                {activeQuestionIndex!=mockInterviewQuestions.length-1 && 
+                <Button className=" font-bold rounded-full px-6 py-2"
+                onClick={()=>setActiveQuestionIndex(activeQuestionIndex+1)}>Next Question</Button>}
+                
+                {activeQuestionIndex==mockInterviewQuestions.length-1 && 
+                <Link href={`/dashboard/interview/${interviewData.mockId}/feedback`}>
+                <Button className=" font-bold rounded-full px-6 py-2 bg-red-600 hover:bg-red-700">End Interview</Button>
+                </Link>}
+
+            </div>
+
+            
 
 
 
