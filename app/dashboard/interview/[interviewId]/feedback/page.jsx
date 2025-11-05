@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 function Feedback({ params }) {
 
     const [feedbackList, setFeedbackList] = React.useState([]);
+    const [averageRating, setAverageRating] = React.useState(0);
     const router = useRouter();
 
     useEffect(() => {
@@ -27,9 +28,17 @@ function Feedback({ params }) {
             .where(eq(userAnswerSchema.mockIdRef, params.interviewId))
             .orderBy(userAnswerSchema.id);
 
+        const ratings = result.map((item) => Number(item.rating)).filter((r) => !isNaN(r));
+        const avgRating = ratings.length
+            ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
+            : 0;
+
+        console.log("Average Rating:", avgRating.toFixed(2));
+
 
         console.log("Feedback Data: ", result);
         setFeedbackList(result);
+        setAverageRating(Math.round(avgRating));
 
     }
 
@@ -37,34 +46,43 @@ function Feedback({ params }) {
 
     return (
         <div className='p-10'>
-            <h2 className='text-3xl font-bold text-green-500'>Congratulations!</h2>
-            <h2 className='font-bold text-2xl my-3'>Here is your interview feedback:</h2>
-            <h2 className='text-blue-600 text-lg my-3'>Your overall interview rating: <strong>7/10</strong></h2>
-            <h2 className='text-sm text-gray-500'>Your interview analysis:</h2>
-            {feedbackList && feedbackList.map((feedbackItem, index) => (
-                <Collapsible key={index} className=' p-5 bg-secondary my-3 rounded-lg border border-black'>
-                    <CollapsibleTrigger className='font-semibold p-2 bg-purple-200 rounded-lg border border-black' >
-                        Q{index + 1}. {feedbackItem.question} <ChevronsUpDown />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <div className='flex flex-col gap-2 mt-3'>
-                            <h2 className='text-blue-600 p-2 border rounded-lg border-gray-400 bg-blue-50'><strong>Rating:</strong> {feedbackItem.rating}</h2>
 
-                            <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-red-50'><strong>Your Answer:</strong> {feedbackItem.userAns}</h2>
 
-                            <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-green-50'><strong>Ideal Answer:</strong> {feedbackItem.correctAns}</h2>
+            {feedbackList.length === 0
+                ?
+                <h2 className='text-gray-500 text-3xl flex justify-center mt-20'>No feedback available. Please complete this interview first!</h2>
 
-                            <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-yellow-50'><strong>Feedback:</strong> {feedbackItem.feedback}</h2>
+                :
+                <>
+                    <h2 className='text-3xl font-bold text-green-500'>Congratulations!</h2>
+                    <h2 className='font-bold text-white/70 text-2xl my-3'>Here is your interview feedback:</h2>
+                    <h2 className='text-blue-600 text-lg my-3'>Your overall interview rating: <strong>{averageRating}/10</strong></h2>
+                    <h2 className='text-sm text-gray-500'>Your interview analysis:</h2>
+                    {feedbackList && feedbackList.map((feedbackItem, index) => (
+                        <Collapsible key={index} className=' p-5 bg-secondary my-3 rounded-lg border border-black'>
+                            <CollapsibleTrigger className='font-semibold p-2 bg-purple-200 rounded-lg border border-black' >
+                                Q{index + 1}. {feedbackItem.question} <ChevronsUpDown />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <div className='flex flex-col gap-2 mt-3'>
+                                    <h2 className='text-blue-600 p-2 border rounded-lg border-gray-400 bg-blue-50'><strong>Rating:</strong> {feedbackItem.rating}</h2>
 
-                        </div>
-                    </CollapsibleContent>
-                </Collapsible>
-                
+                                    <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-red-50'><strong>Your Answer:</strong> {feedbackItem.userAns}</h2>
 
-            ))}
+                                    <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-green-50'><strong>Ideal Answer:</strong> {feedbackItem.correctAns}</h2>
+
+                                    <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-yellow-50'><strong>Feedback:</strong> {feedbackItem.feedback}</h2>
+
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
+
+
+                    ))}
+                </>}
             <div className='flex justify-center'>
-            <Button className="mt-2 bg-purple-400 hover:bg-purple-700 text-white font-bold rounded-full px-6 py-2"
-            onClick={()=>router.replace('/dashboard')}>Go Home</Button>
+                <Button className="mt-2 bg-purple-400 hover:bg-purple-700 text-white font-bold rounded-full px-6 py-2"
+                    onClick={() => router.replace('/dashboard')}>Dashboard</Button>
             </div>
 
 
