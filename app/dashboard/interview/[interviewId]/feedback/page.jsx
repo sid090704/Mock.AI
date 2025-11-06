@@ -8,7 +8,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { ChevronsUpDown } from 'lucide-react'
+import { ChevronsUpDown,Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 
@@ -54,28 +54,90 @@ function Feedback({ params }) {
 
                 :
                 <>
-                    <h2 className='text-3xl font-bold text-green-500'>Congratulations!</h2>
-                    <h2 className='font-bold text-white/70 text-2xl my-3'>Here is your interview feedback:</h2>
-                    <h2 className='text-blue-600 text-lg my-3'>Your overall interview rating: <strong>{averageRating}/10</strong></h2>
-                    <h2 className='text-sm text-gray-500'>Your interview analysis:</h2>
+                    <div className="text-center my-10 space-y-5">
+                        {/* Congratulations Header */}
+                        <h2 className=" text-5xl font-extrabold bg-gradient-to-r from-green-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(34,211,238,0.4)] animate-pulse leading-[1.2] pb-1">
+                             Congratulations!
+                        </h2>
+
+                        {/* Subheading */}
+                        <h2 className="text-2xl md:text-3xl font-semibold text-white/90 mt-10 tracking-wide">
+                            Here’s your <span className="text-cyan-300">interview feedback:</span> 
+                        </h2>
+
+                        {/* Rating */}
+                        <h2 className="text-xl md:text-2xl mt-6 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-500 drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">
+                            Overall Rating:&nbsp;
+                            <strong className="text-white bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
+                                {averageRating}/10
+                            </strong>
+                        </h2>
+
+                        {/* Analysis Header */}
+                        <h2 className="text-semibold text-base md:text-lg text-gray-300 mt-4 tracking-wide italic">
+                             Detailed Interview Analysis Below:
+                        </h2>
+                    </div>
                     {feedbackList && feedbackList.map((feedbackItem, index) => (
-                        <Collapsible key={index} className=' p-5 bg-secondary my-3 rounded-lg border border-black'>
-                            <CollapsibleTrigger className='font-semibold p-2 bg-purple-200 rounded-lg border border-black' >
-                                Q{index + 1}. {feedbackItem.question} <ChevronsUpDown />
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                                <div className='flex flex-col gap-2 mt-3'>
-                                    <h2 className='text-blue-600 p-2 border rounded-lg border-gray-400 bg-blue-50'><strong>Rating:</strong> {feedbackItem.rating}</h2>
+                 <Collapsible
+          key={index}
+          className="p-5 rounded-2xl backdrop-blur-lg border border-white/10 
+                     bg-white/5 hover:bg-white/10 
+                     transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.2)]
+                     overflow-hidden"
+        >
+          {/* Header */}
+          <CollapsibleTrigger
+            className="w-full flex items-start justify-between text-left
+                       px-5 py-4 rounded-xl font-semibold text-white/90
+                       bg-gradient-to-r from-[#1e1e2a]/60 via-[#24243e]/50 to-[#1a1a28]/60
+                       hover:from-[#2c2c45]/60 hover:to-[#262640]/60
+                       transition-all duration-300 backdrop-blur-sm
+                       whitespace-normal break-words"
+          >
+            <div className="flex flex-col md:flex-row md:items-center gap-3 w-full text-wrap">
+              <span className="text-sm font-bold text-cyan-300 bg-cyan-900/40 px-3 py-1 rounded-full shrink-0">
+                Q{index + 1}
+              </span>
+              <span className="text-base text-white/90 leading-relaxed break-words">
+                {feedbackItem.question}
+              </span>
+            </div>
+            <ChevronsUpDown className="h-5 w-5 text-cyan-300 flex-shrink-0 ml-2" />
+          </CollapsibleTrigger>
 
-                                    <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-red-50'><strong>Your Answer:</strong> {feedbackItem.userAns}</h2>
+          {/* Expanded Content */}
+          <CollapsibleContent className="mt-4 space-y-4 text-wrap break-words">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-4 py-3 text-white/80">
+              <Star className="text-yellow-400" size={18} />
+              <strong>Rating:</strong>{" "}
+              <span className="text-cyan-300 font-semibold">
+                {feedbackItem.rating}/10
+              </span>
+            </div>
 
-                                    <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-green-50'><strong>Ideal Answer:</strong> {feedbackItem.correctAns}</h2>
+            <div className="p-4 rounded-lg border border-white/10 bg-white/5 text-gray-200 break-words">
+              <strong className="text-cyan-300">Your Answer:</strong>
+              <p className="mt-2 text-sm leading-relaxed text-white/80 whitespace-pre-line">
+                {feedbackItem.userAns}
+              </p>
+            </div>
 
-                                    <h2 className='p-2 border rounded-lg border-gray-400 text-sm bg-yellow-50'><strong>Feedback:</strong> {feedbackItem.feedback}</h2>
+            <div className="p-4 rounded-lg border border-white/10 bg-white/5 text-gray-200 break-words">
+              <strong className="text-green-300">Ideal Answer:</strong>
+              <p className="mt-2 text-sm leading-relaxed text-white/80 whitespace-pre-line">
+                {feedbackItem.correctAns}
+              </p>
+            </div>
 
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
+            <div className="p-4 rounded-lg border border-white/10 bg-white/5 text-gray-200 break-words">
+              <strong className="text-yellow-300">Feedback:</strong>
+              <p className="mt-2 text-sm leading-relaxed text-white/80 whitespace-pre-line">
+                {feedbackItem.feedback}
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
 
                     ))}
