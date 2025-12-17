@@ -51,11 +51,11 @@ function Header() {
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 
       ${
         scrolled
-          ? "bg-black backdrop-blur-md shadow-lg border-b border-black"
+          ? " backdrop-blur-md shadow-lg "
           : "bg-transparent backdrop-blur-none"
       }`}
     >
-      <div className="flex items-center justify-center px-6 md:px-12 h-[80px]">
+      <div className="flex items-center justify-center px-6 md:px-12 h-[80px] my-5">
         <CardNav
           logo="/images/logo.png"
           logoAlt="Mock.AI"
