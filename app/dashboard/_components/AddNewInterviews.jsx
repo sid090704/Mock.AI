@@ -40,8 +40,10 @@ Job Role: ${jobRole}
 Company: ${company}
 Tech Stack: ${jobRequirement}
 Experience: ${experience} years
-Ensure questions are relevant and realistic. Return only valid JSON:
-[{"question": "...", "answer": "..."}]`;
+Ensure questions are relevant and realistic. Return only valid raw JSON array in the format:
+[{"question": "...", "answer": "..."}]
+make sure that plain text is returned without any code blocks or additional formatting. Also make sure that the answer is not given 
+in markdown format.`;
 
     try {
       const result = await chatSession.sendMessage(inputPrompt);

@@ -66,7 +66,7 @@ function QuestionsSection({ mockInterviewQuestions, activeQuestionIndex }) {
           </h2>
 
           {/* TTS Icon */}
-          <div className="absolute top-0 right-0">
+          <div className=" bottom-0 right-0">
             {isSpeaking ? (
               <Loader2 className="animate-spin text-cyan-400" size={26} />
             ) : (

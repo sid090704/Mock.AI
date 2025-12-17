@@ -29,6 +29,7 @@ function Interview({ params }) {
     setShowWebcam(true);
     setPermissionGranted(false); // reset permission flag
   };
+  
 
   return (
     <div className="relative z-10 flex flex-col items-center justify-center mt-20 px-4 md:px-10 text-white">
