@@ -67,6 +67,7 @@ function Header() {
           className="mt-2 bg-transparent"
         />
       </div>
+      
     </header>
   );
 }

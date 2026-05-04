@@ -1,24 +1,26 @@
-const {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} = require("@google/generative-ai");
+import Groq from "groq-sdk";
 
-const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey);
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
+const groq = new Groq({
+  apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
+  dangerouslyAllowBrowser: true,
 });
 
-const generationConfig = {
-  temperature: 1,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 10000,
-  responseMimeType: "text/plain",
+const MODEL = "llama-3.3-70b-versatile";
+
+export const chatSession = {
+  sendMessage: async (prompt) => {
+    const response = await groq.chat.completions.create({
+      model: MODEL,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 1,
+      max_tokens: 10000,
+    });
+
+    const text = response.choices[0]?.message?.content || "";
+    return {
+      response: {
+        text: () => text,
+      },
+    };
+  },
 };
-export const chatSession = model.startChat({
-  generationConfig,
-  
-});
